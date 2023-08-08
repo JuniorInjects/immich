@@ -43,7 +43,6 @@ We will use those values in the steps below.
     depends_on:
       - redis
       - database
-      - typesense
     restart: always
 
   immich-microservices:
@@ -59,7 +58,6 @@ We will use those values in the steps below.
     depends_on:
       - redis
       - database
-      - typesense
     restart: always
 ```
 

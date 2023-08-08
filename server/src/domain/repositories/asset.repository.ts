@@ -1,5 +1,6 @@
 import { AssetEntity, AssetType, ExifEntity } from '@app/infra/entities';
 import { Paginated, PaginationOptions } from '../domain.util';
+import { SearchExploreItem } from '../repositories';
 
 export type AssetStats = Record<AssetType, number>;
 
@@ -56,14 +57,19 @@ export enum TimeBucketSize {
   MONTH = 'MONTH',
 }
 
-export interface TimeBucketOptions {
-  size: TimeBucketSize;
+export interface AssetBuilderOptions {
   isArchived?: boolean;
   isFavorite?: boolean;
   isTrashed?: boolean;
   albumId?: string;
   personId?: string;
   userId?: string;
+  exifInfo?: boolean;
+  assetType?: AssetType;
+}
+
+export interface TimeBucketOptions extends AssetBuilderOptions {
+  size: TimeBucketSize;
 }
 
 export interface TimeBucketItem {
@@ -90,6 +96,21 @@ export type AssetCreate = Pick<
 export interface MonthDay {
   day: number;
   month: number;
+}
+
+export interface AssetExploreFieldOptions {
+  maxFields: number;
+  minAssetsPerField: number;
+}
+
+export interface AssetExploreOptions extends AssetExploreFieldOptions {
+  relation: keyof AssetEntity;
+  relatedField: string;
+  unnest?: boolean;
+}
+
+export interface MetadataSearchOptions {
+  numResults: number;
 }
 
 export const IAssetRepository = 'IAssetRepository';
@@ -123,4 +144,7 @@ export interface IAssetRepository {
   getTimeBuckets(options: TimeBucketOptions): Promise<TimeBucketItem[]>;
   getByTimeBucket(timeBucket: string, options: TimeBucketOptions): Promise<AssetEntity[]>;
   upsertExif(exif: Partial<ExifEntity>): Promise<void>;
+  getAssetIdByCity(userId: string, options: AssetExploreFieldOptions): Promise<SearchExploreItem<string>>;
+  getAssetIdByTag(userId: string, options: AssetExploreFieldOptions): Promise<SearchExploreItem<string>>;
+  searchMetadata(query: string, userId: string, options: MetadataSearchOptions): Promise<AssetEntity[]>;
 }

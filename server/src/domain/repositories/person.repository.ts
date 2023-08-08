@@ -16,6 +16,13 @@ export interface UpdateFacesData {
   newPersonId: string;
 }
 
+export interface EmbeddingSearch {
+  ownerId: string;
+  embedding: number[];
+  numResults: number;
+  maxDistance?: number;
+}
+
 export interface IPersonRepository {
   getAll(): Promise<PersonEntity[]>;
   getAllWithoutThumbnail(): Promise<PersonEntity[]>;
@@ -33,6 +40,7 @@ export interface IPersonRepository {
   delete(entity: PersonEntity): Promise<PersonEntity | null>;
   deleteAll(): Promise<number>;
 
+  searchByEmbedding(search: EmbeddingSearch): Promise<AssetFaceEntity[]>;
   getAllFaces(): Promise<AssetFaceEntity[]>;
   getFacesByIds(ids: AssetFaceId[]): Promise<AssetFaceEntity[]>;
   getRandomFace(personId: string): Promise<AssetFaceEntity | null>;

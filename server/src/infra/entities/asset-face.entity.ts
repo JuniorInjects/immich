@@ -10,12 +10,8 @@ export class AssetFaceEntity {
   @PrimaryColumn()
   personId!: string;
 
-  @Column({
-    type: 'float4',
-    array: true,
-    nullable: true,
-  })
-  embedding!: number[] | null;
+  @Column({ type: 'float4', array: true })
+  embedding!: number[];
 
   @Column({ default: 0, type: 'int' })
   imageWidth!: number;

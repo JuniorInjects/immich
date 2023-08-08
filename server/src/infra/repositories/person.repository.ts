@@ -1,7 +1,8 @@
-import { AssetFaceId, IPersonRepository, PersonSearchOptions, UpdateFacesData } from '@app/domain';
+import { AssetFaceId, EmbeddingSearch, IPersonRepository, PersonSearchOptions, UpdateFacesData } from '@app/domain';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { AssetEntity, AssetFaceEntity, PersonEntity } from '../entities';
+import { asVector } from '../infra.utils.ts';
 
 export class PersonRepository implements IPersonRepository {
   constructor(
@@ -133,8 +134,14 @@ export class PersonRepository implements IPersonRepository {
     return this.personRepository.save(entity);
   }
 
-  createFace(entity: Partial<AssetFaceEntity>): Promise<AssetFaceEntity> {
-    return this.assetFaceRepository.save(entity);
+  async createFace(entity: AssetFaceEntity): Promise<AssetFaceEntity> {
+    const { embedding, ...face } = entity;
+    await this.assetFaceRepository.save(face);
+    await this.assetFaceRepository.manager.query(
+      `UPDATE "asset_faces" SET "embedding" = ${asVector(embedding)} WHERE "assetId" = $1 AND "personId" = $2`,
+      [entity.assetId, entity.personId],
+    );
+    return this.assetFaceRepository.findOneByOrFail({ assetId: entity.assetId, personId: entity.personId });
   }
 
   async update(entity: Partial<PersonEntity>): Promise<PersonEntity> {
@@ -148,5 +155,20 @@ export class PersonRepository implements IPersonRepository {
 
   async getRandomFace(personId: string): Promise<AssetFaceEntity | null> {
     return this.assetFaceRepository.findOneBy({ personId });
+  }
+
+  searchByEmbedding({ ownerId, embedding, numResults, maxDistance }: EmbeddingSearch): Promise<AssetFaceEntity[]> {
+    let query = this.assetFaceRepository
+      .createQueryBuilder('faces')
+      .leftJoinAndSelect('faces.asset', 'asset')
+      .where('asset.ownerId = :ownerId', { ownerId })
+      .orderBy(`faces.embedding <=> ${asVector(embedding)}`)
+      .limit(numResults);
+
+    if (maxDistance) {
+      query = query.andWhere(`(faces.embedding <=> ${asVector(embedding)}) <= :maxDistance`, { maxDistance });
+    }
+
+    return query.getMany();
   }
 }

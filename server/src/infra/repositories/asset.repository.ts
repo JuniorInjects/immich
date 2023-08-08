@@ -1,5 +1,8 @@
 import {
+  AssetBuilderOptions,
   AssetCreate,
+  AssetExploreFieldOptions,
+  AssetExploreOptions,
   AssetSearchOptions,
   AssetStats,
   AssetStatsOptions,
@@ -7,22 +10,23 @@ import {
   LivePhotoSearchOptions,
   MapMarker,
   MapMarkerSearchOptions,
+  MetadataSearchOptions,
   MonthDay,
   Paginated,
   PaginationOptions,
+  SearchExploreItem,
   TimeBucketItem,
   TimeBucketOptions,
   TimeBucketSize,
-  WithoutProperty,
   WithProperty,
+  WithoutProperty,
 } from '@app/domain';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DateTime } from 'luxon';
 import { And, FindOptionsRelations, FindOptionsWhere, In, IsNull, LessThan, Not, Repository } from 'typeorm';
-import { AssetEntity, AssetType, ExifEntity } from '../entities';
-import OptionalBetween from '../utils/optional-between.util';
-import { paginate } from '../utils/pagination.util';
+import { AssetEntity, AssetType, ExifEntity, SmartInfoEntity } from '../entities';
+import { OptionalBetween, paginate } from '../infra.utils.ts';
 
 const truncateMap: Record<TimeBucketSize, string> = {
   [TimeBucketSize.DAY]: 'day',
@@ -36,6 +40,7 @@ export class AssetRepository implements IAssetRepository {
   constructor(
     @InjectRepository(AssetEntity) private repository: Repository<AssetEntity>,
     @InjectRepository(ExifEntity) private exifRepository: Repository<ExifEntity>,
+    @InjectRepository(SmartInfoEntity) private smartInfoRepository: Repository<SmartInfoEntity>,
   ) {}
 
   async upsertExif(exif: Partial<ExifEntity>): Promise<void> {
@@ -503,13 +508,57 @@ export class AssetRepository implements IAssetRepository {
     );
   }
 
-  private getBuilder(options: TimeBucketOptions) {
-    const { isArchived, isFavorite, isTrashed, albumId, personId, userId } = options;
+  async getAssetIdByCity(
+    userId: string,
+    { minAssetsPerField, maxFields }: AssetExploreFieldOptions,
+  ): Promise<SearchExploreItem<string>> {
+    const items = await this.getBuilder({ userId, exifInfo: false, assetType: AssetType.IMAGE, isArchived: false })
+      .select('asset.id')
+      .innerJoin('exif', 'e', 'asset.id = e."assetId"')
+      .groupBy('e.city')
+      .having('count(e.city) >= :minAssetsPerField', { minAssetsPerField })
+      .orderBy('random()')
+      .limit(maxFields)
+      .getRawMany();
 
-    let builder = this.repository
-      .createQueryBuilder('asset')
-      .where('asset.isVisible = true')
-      .leftJoinAndSelect('asset.exifInfo', 'exifInfo');
+    return { fieldName: 'exifInfo.city', items };
+  }
+
+  async getAssetIdByTag(
+    userId: string,
+    { minAssetsPerField, maxFields }: AssetExploreFieldOptions,
+  ): Promise<SearchExploreItem<string>> {
+    const cte = this.smartInfoRepository
+      .createQueryBuilder('si')
+      .select('unnest(tags)', 'tag')
+      .groupBy('tag')
+      .having('count(*) >= :minAssetsPerField', { minAssetsPerField })
+      .orderBy('random()')
+      .limit(maxFields);
+
+    const items = await this.getBuilder({ userId, exifInfo: false, assetType: AssetType.IMAGE, isArchived: false })
+      .select('asset.id')
+      .innerJoin('smart_info', 'si', 'asset.id = si."assetId"')
+      .addCommonTableExpression(cte.getQuery(), 'tags')
+      .where('si.tags @> tags')
+      .limit(maxFields)
+      .getRawMany();
+
+    return { fieldName: 'smartInfo.tags', items };
+  }
+
+  private getBuilder(options: AssetBuilderOptions) {
+    const { isArchived, isFavorite, isTrashed, albumId, personId, userId, exifInfo, assetType } = options;
+
+    let builder = this.repository.createQueryBuilder('asset').where('asset.isVisible = true');
+
+    if (assetType !== undefined) {
+      builder = builder.andWhere('asset.type = :assetType', { assetType });
+    }
+
+    if (exifInfo !== false) {
+      builder = builder.leftJoinAndSelect('asset.exifInfo', 'exifInfo');
+    }
 
     if (albumId) {
       builder = builder.leftJoin('asset.albums', 'album').andWhere('album.id = :albumId', { albumId });
@@ -539,5 +588,44 @@ export class AssetRepository implements IAssetRepository {
     }
 
     return builder;
+  }
+
+  async searchMetadata(query: string, ownerId: string, { numResults }: MetadataSearchOptions): Promise<AssetEntity[]> {
+    const rows = await this.repository
+      .createQueryBuilder('assets')
+      .select('assets.*')
+      .addSelect('e.country', 'country')
+      .addSelect('e.state', 'state')
+      .addSelect('e.city', 'city')
+      .addSelect('e.description', 'description')
+      .addSelect('e.model', 'model')
+      .addSelect('e.make', 'make')
+      .addSelect('COALESCE(si.tags, array[]::text[])', 'tags')
+      .addSelect('COALESCE(si.objects, array[]::text[])', 'objects')
+      .innerJoin('smart_info', 'si', 'si."assetId" = assets."id"')
+      .innerJoin('exif', 'e', 'assets."id" = e."assetId"')
+      .where('a.ownerId = :ownerId', { ownerId })
+      .where('(e."exifTextSearchableColumn" || si."smartInfoTextSearchableColumn") @@ :query', { query })
+      .limit(numResults)
+      .getRawMany();
+
+    return rows.map(
+      ({ tags, objects, country, state, city, description, model, make, ...assetInfo }) =>
+        ({
+          exifInfo: {
+            country,
+            state,
+            city,
+            description,
+            model,
+            make,
+          },
+          smartInfo: {
+            tags,
+            objects,
+          },
+          ...assetInfo,
+        }) as AssetEntity,
+    );
   }
 }
