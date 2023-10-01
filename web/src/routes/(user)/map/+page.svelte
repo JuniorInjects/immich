@@ -5,6 +5,7 @@
   import MapSettingsModal from '$lib/components/map-page/map-settings-modal.svelte';
   import Portal from '$lib/components/shared-components/portal/portal.svelte';
   import { AppRoute } from '$lib/constants';
+  import { MapLibre, VectorTileSource, GeoJSON, MarkerLayer } from 'svelte-maplibre';
   import { assetViewingStore } from '$lib/stores/asset-viewing.store';
   import { mapSettings } from '$lib/stores/preferences.store';
   import { featureFlags, serverConfig } from '$lib/stores/server-config.store';
@@ -105,6 +106,51 @@
 {#if $featureFlags.loaded && $featureFlags.map}
   <UserPageLayout user={data.user} title={data.meta.title}>
     <div class="isolate h-full w-full">
+      <MapLibre
+        style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        class="h-[500px]"
+        standardControls
+      >
+        <VectorTileSource tiles={['https://api-l.cofractal.com/v0/maps/vt/overture/{z}/{x}/{y}']} />
+        <GeoJSON
+          data={{
+            type: 'FeatureCollection',
+            features: mapMarkers.map((marker) => {
+              // This should be done on the server
+              return {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [marker.lon, marker.lat] },
+                properties: {
+                  id: marker.id,
+                },
+              };
+            }),
+          }}
+          cluster={{ maxZoom: 14, radius: 500 }}
+        >
+          <MarkerLayer applyToClusters interactive let:feature>
+            <div class="rounded-full w-[40px] h-[40px] bg-blue-200 flex justify-center items-center">
+              {feature.properties?.point_count}
+            </div>
+          </MarkerLayer>
+          <MarkerLayer applyToClusters={false} let:feature>
+            <img
+              src={api.getAssetFileUrl(feature.properties?.id)}
+              class="rounded-full w-[60px] h-[60px]"
+              alt={`Image with id ${feature.properties?.id}`}
+            />
+          </MarkerLayer>
+        </GeoJSON>
+        <!-- {#each mapMarkers as { id, lat, lon }}
+          <Marker
+            lngLat={{ lng: lon, lat }}
+            class="w-[60px] h-[60px] flex justify-center items-center"
+            on:click={() => assetViewingStore.setAssetId(id)}
+          >
+            <img src={api.getAssetFileUrl(id)} class="rounded-full w-[60px] h-[60px]" />
+          </Marker>
+        {/each} -->
+      </MapLibre>
       {#if leaflet}
         {@const { Map, TileLayer, AssetMarkerCluster, Control } = leaflet}
         <Map
