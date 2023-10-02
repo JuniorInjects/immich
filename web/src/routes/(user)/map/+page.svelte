@@ -5,7 +5,7 @@
   import MapSettingsModal from '$lib/components/map-page/map-settings-modal.svelte';
   import Portal from '$lib/components/shared-components/portal/portal.svelte';
   import { AppRoute } from '$lib/constants';
-  import { MapLibre, VectorTileSource, GeoJSON, MarkerLayer } from 'svelte-maplibre';
+  import { MapLibre, GeoJSON, MarkerLayer } from 'svelte-maplibre';
   import { assetViewingStore } from '$lib/stores/asset-viewing.store';
   import { mapSettings } from '$lib/stores/preferences.store';
   import { featureFlags, serverConfig } from '$lib/stores/server-config.store';
@@ -15,6 +15,8 @@
   import { onDestroy, onMount } from 'svelte';
   import Cog from 'svelte-material-icons/Cog.svelte';
   import type { PageData } from './$types';
+  import type { StyleSpecification } from 'maplibre-gl';
+  import _style from './style.json';
 
   export let data: PageData;
 
@@ -26,6 +28,8 @@
   let viewingAssets: string[] = [];
   let viewingAssetCursor = 0;
   let showSettingsModal = false;
+
+  const style = _style as StyleSpecification;
 
   onMount(() => {
     loadMapMarkers().then((data) => (mapMarkers = data));
@@ -106,12 +110,7 @@
 {#if $featureFlags.loaded && $featureFlags.map}
   <UserPageLayout user={data.user} title={data.meta.title}>
     <div class="isolate h-full w-full">
-      <MapLibre
-        style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-        class="h-[500px]"
-        standardControls
-      >
-        <VectorTileSource tiles={['https://api-l.cofractal.com/v0/maps/vt/overture/{z}/{x}/{y}']} />
+      <MapLibre {style} class="h-[500px]" standardControls>
         <GeoJSON
           data={{
             type: 'FeatureCollection',
