@@ -20,6 +20,7 @@
   import ContentCopy from 'svelte-material-icons/ContentCopy.svelte';
   import Download from 'svelte-material-icons/Download.svelte';
   import type { PageData } from './$types';
+  import LibraryScanSettings from '$lib/components/admin-page/settings/library-scan/library-scan-settings.svelte';
 
   export let data: PageData;
 
@@ -66,6 +67,10 @@
         isOpen={$page.url.searchParams.get('open') === 'job-settings'}
       >
         <JobSettings disabled={$featureFlags.configFile} jobConfig={configs.job} />
+      </SettingAccordion>
+
+      <SettingAccordion title="Library scanning" subtitle="Manage the settings for the automatic library scanning job">
+        <LibraryScanSettings disabled={$featureFlags.configFile} libraryScanConfig={configs.libraryScan} />
       </SettingAccordion>
 
       <SettingAccordion title="Machine Learning Settings" subtitle="Manage machine learning features and settings">

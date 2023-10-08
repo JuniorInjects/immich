@@ -115,6 +115,10 @@ export const defaults = Object.freeze<SystemConfig>({
     enabled: true,
     days: 30,
   },
+  libraryScan: {
+    enabled: true,
+    cronExpression: '0 0 * * *',
+  },
 });
 
 export enum FeatureFlag {

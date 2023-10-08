@@ -90,6 +90,9 @@ export enum SystemConfigKey {
 
   TRASH_ENABLED = 'trash.enabled',
   TRASH_DAYS = 'trash.days',
+
+  LIBRARY_SCAN_ENABLED = 'libraryScan.enabled',
+  LIBRARY_SCAN_CRON_EXPRESSION = 'libraryScan.cronExpression',
 }
 
 export enum TranscodePolicy {
@@ -220,5 +223,9 @@ export interface SystemConfig {
   trash: {
     enabled: boolean;
     days: number;
+  };
+  libraryScan: {
+    enabled: boolean;
+    cronExpression: string;
   };
 }
