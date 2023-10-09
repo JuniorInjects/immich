@@ -115,6 +115,10 @@ const updatedConfig = Object.freeze<SystemConfig>({
     enabled: true,
     days: 10,
   },
+  libraryScan: {
+    enabled: true,
+    cronExpression: '0 0 * * *',
+  },
 });
 
 describe(SystemConfigService.name, () => {
