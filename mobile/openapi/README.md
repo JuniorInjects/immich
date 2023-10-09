@@ -310,6 +310,7 @@ Class | Method | HTTP request | Description
  - [SystemConfigDto](doc//SystemConfigDto.md)
  - [SystemConfigFFmpegDto](doc//SystemConfigFFmpegDto.md)
  - [SystemConfigJobDto](doc//SystemConfigJobDto.md)
+ - [SystemConfigLibraryScanDto](doc//SystemConfigLibraryScanDto.md)
  - [SystemConfigMachineLearningDto](doc//SystemConfigMachineLearningDto.md)
  - [SystemConfigMapDto](doc//SystemConfigMapDto.md)
  - [SystemConfigOAuthDto](doc//SystemConfigOAuthDto.md)
