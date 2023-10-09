@@ -63,6 +63,7 @@ export class SystemConfigDto implements SystemConfig {
   trash!: SystemConfigTrashDto;
 
   @Type(() => SystemConfigLibraryScanDto)
+  @ValidateNested()
   @IsObject()
   libraryScan!: SystemConfigLibraryScanDto;
 }
