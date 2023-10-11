@@ -98,6 +98,72 @@ class SystemConfigApi {
     return null;
   }
 
+  /// Performs an HTTP 'GET /system-config/map-dark' operation and returns the [Response].
+  Future<Response> getMapDarkWithHttpInfo() async {
+    // ignore: prefer_const_declarations
+    final path = r'/system-config/map-dark';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  Future<void> getMapDark() async {
+    final response = await getMapDarkWithHttpInfo();
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
+  /// Performs an HTTP 'GET /system-config/map-light' operation and returns the [Response].
+  Future<Response> getMapLightWithHttpInfo() async {
+    // ignore: prefer_const_declarations
+    final path = r'/system-config/map-light';
+
+    // ignore: prefer_final_locals
+    Object? postBody;
+
+    final queryParams = <QueryParam>[];
+    final headerParams = <String, String>{};
+    final formParams = <String, String>{};
+
+    const contentTypes = <String>[];
+
+
+    return apiClient.invokeAPI(
+      path,
+      'GET',
+      queryParams,
+      postBody,
+      headerParams,
+      formParams,
+      contentTypes.isEmpty ? null : contentTypes.first,
+    );
+  }
+
+  Future<void> getMapLight() async {
+    final response = await getMapLightWithHttpInfo();
+    if (response.statusCode >= HttpStatus.badRequest) {
+      throw ApiException(response.statusCode, await _decodeBodyBytes(response));
+    }
+  }
+
   /// Performs an HTTP 'GET /system-config/storage-template-options' operation and returns the [Response].
   Future<Response> getStorageTemplateOptionsWithHttpInfo() async {
     // ignore: prefer_const_declarations

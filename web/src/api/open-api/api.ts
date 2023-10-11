@@ -2060,6 +2060,39 @@ export interface MapMarkerResponseDto {
 /**
  * 
  * @export
+ * @interface MapStylesDto
+ */
+export interface MapStylesDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof MapStylesDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof MapStylesDto
+     */
+    'theme'?: MapStylesDtoThemeEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof MapStylesDto
+     */
+    'url': string;
+}
+
+export const MapStylesDtoThemeEnum = {
+    Light: 'light',
+    Dark: 'dark'
+} as const;
+
+export type MapStylesDtoThemeEnum = typeof MapStylesDtoThemeEnum[keyof typeof MapStylesDtoThemeEnum];
+
+/**
+ * 
+ * @export
  * @interface MemoryLaneResponseDto
  */
 export interface MemoryLaneResponseDto {
@@ -2596,10 +2629,10 @@ export interface ServerConfigDto {
     'loginPageMessage': string;
     /**
      * 
-     * @type {string}
+     * @type {Array<MapStylesDto>}
      * @memberof ServerConfigDto
      */
-    'mapTileUrl': string;
+    'mapStyles': Array<MapStylesDto>;
     /**
      * 
      * @type {string}
@@ -3382,10 +3415,10 @@ export interface SystemConfigMapDto {
     'enabled': boolean;
     /**
      * 
-     * @type {string}
+     * @type {Array<MapStylesDto>}
      * @memberof SystemConfigMapDto
      */
-    'tileUrl': string;
+    'styles': Array<MapStylesDto>;
 }
 /**
  * 
@@ -13777,6 +13810,82 @@ export const SystemConfigApiAxiosParamCreator = function (configuration?: Config
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        getMapDark: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/system-config/map-dark`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication cookie required
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "x-api-key", configuration)
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMapLight: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/system-config/map-light`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication cookie required
+
+            // authentication api_key required
+            await setApiKeyToObject(localVarHeaderParameter, "x-api-key", configuration)
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         getStorageTemplateOptions: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/system-config/storage-template-options`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -13887,6 +13996,24 @@ export const SystemConfigApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async getMapDark(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMapDark(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getMapLight(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getMapLight(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async getStorageTemplateOptions(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SystemConfigTemplateStorageOptionDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getStorageTemplateOptions(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -13926,6 +14053,22 @@ export const SystemConfigApiFactory = function (configuration?: Configuration, b
          */
         getDefaults(options?: AxiosRequestConfig): AxiosPromise<SystemConfigDto> {
             return localVarFp.getDefaults(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMapDark(options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.getMapDark(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getMapLight(options?: AxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.getMapLight(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -13986,6 +14129,26 @@ export class SystemConfigApi extends BaseAPI {
      */
     public getDefaults(options?: AxiosRequestConfig) {
         return SystemConfigApiFp(this.configuration).getDefaults(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SystemConfigApi
+     */
+    public getMapDark(options?: AxiosRequestConfig) {
+        return SystemConfigApiFp(this.configuration).getMapDark(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof SystemConfigApi
+     */
+    public getMapLight(options?: AxiosRequestConfig) {
+        return SystemConfigApiFp(this.configuration).getMapLight(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

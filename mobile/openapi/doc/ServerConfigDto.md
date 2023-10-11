@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **isInitialized** | **bool** |  | 
 **loginPageMessage** | **String** |  | 
-**mapTileUrl** | **String** |  | 
+**mapStyles** | [**List<MapStylesDto>**](MapStylesDto.md) |  | [default to const []]
 **oauthButtonText** | **String** |  | 
 **trashDays** | **int** |  | 
 

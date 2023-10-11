@@ -27,6 +27,16 @@ void main() {
       // TODO
     });
 
+    //Future getMapDark() async
+    test('test getMapDark', () async {
+      // TODO
+    });
+
+    //Future getMapLight() async
+    test('test getMapLight', () async {
+      // TODO
+    });
+
     //Future<SystemConfigTemplateStorageOptionDto> getStorageTemplateOptions() async
     test('test getStorageTemplateOptions', () async {
       // TODO

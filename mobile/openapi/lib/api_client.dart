@@ -311,6 +311,8 @@ class ApiClient {
           return LogoutResponseDto.fromJson(value);
         case 'MapMarkerResponseDto':
           return MapMarkerResponseDto.fromJson(value);
+        case 'MapStylesDto':
+          return MapStylesDto.fromJson(value);
         case 'MemoryLaneResponseDto':
           return MemoryLaneResponseDto.fromJson(value);
         case 'MergePersonDto':

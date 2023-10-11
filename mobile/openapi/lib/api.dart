@@ -110,6 +110,7 @@ part 'model/login_credential_dto.dart';
 part 'model/login_response_dto.dart';
 part 'model/logout_response_dto.dart';
 part 'model/map_marker_response_dto.dart';
+part 'model/map_styles_dto.dart';
 part 'model/memory_lane_response_dto.dart';
 part 'model/merge_person_dto.dart';
 part 'model/model_type.dart';

@@ -14,31 +14,31 @@ class SystemConfigMapDto {
   /// Returns a new [SystemConfigMapDto] instance.
   SystemConfigMapDto({
     required this.enabled,
-    required this.tileUrl,
+    this.styles = const [],
   });
 
   bool enabled;
 
-  String tileUrl;
+  List<MapStylesDto> styles;
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is SystemConfigMapDto &&
      other.enabled == enabled &&
-     other.tileUrl == tileUrl;
+     other.styles == styles;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
     (enabled.hashCode) +
-    (tileUrl.hashCode);
+    (styles.hashCode);
 
   @override
-  String toString() => 'SystemConfigMapDto[enabled=$enabled, tileUrl=$tileUrl]';
+  String toString() => 'SystemConfigMapDto[enabled=$enabled, styles=$styles]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
       json[r'enabled'] = this.enabled;
-      json[r'tileUrl'] = this.tileUrl;
+      json[r'styles'] = this.styles;
     return json;
   }
 
@@ -51,7 +51,7 @@ class SystemConfigMapDto {
 
       return SystemConfigMapDto(
         enabled: mapValueOfType<bool>(json, r'enabled')!,
-        tileUrl: mapValueOfType<String>(json, r'tileUrl')!,
+        styles: MapStylesDto.listFromJson(json[r'styles']),
       );
     }
     return null;
@@ -100,7 +100,7 @@ class SystemConfigMapDto {
   /// The list of required keys that must be present in a JSON.
   static const requiredKeys = <String>{
     'enabled',
-    'tileUrl',
+    'styles',
   };
 }
 

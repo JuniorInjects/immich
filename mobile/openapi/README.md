@@ -172,6 +172,8 @@ Class | Method | HTTP request | Description
 *SharedLinkApi* | [**updateSharedLink**](doc//SharedLinkApi.md#updatesharedlink) | **PATCH** /shared-link/{id} | 
 *SystemConfigApi* | [**getConfig**](doc//SystemConfigApi.md#getconfig) | **GET** /system-config | 
 *SystemConfigApi* | [**getDefaults**](doc//SystemConfigApi.md#getdefaults) | **GET** /system-config/defaults | 
+*SystemConfigApi* | [**getMapDark**](doc//SystemConfigApi.md#getmapdark) | **GET** /system-config/map-dark | 
+*SystemConfigApi* | [**getMapLight**](doc//SystemConfigApi.md#getmaplight) | **GET** /system-config/map-light | 
 *SystemConfigApi* | [**getStorageTemplateOptions**](doc//SystemConfigApi.md#getstoragetemplateoptions) | **GET** /system-config/storage-template-options | 
 *SystemConfigApi* | [**updateConfig**](doc//SystemConfigApi.md#updateconfig) | **PUT** /system-config | 
 *TagApi* | [**createTag**](doc//TagApi.md#createtag) | **POST** /tag | 
@@ -261,6 +263,7 @@ Class | Method | HTTP request | Description
  - [LoginResponseDto](doc//LoginResponseDto.md)
  - [LogoutResponseDto](doc//LogoutResponseDto.md)
  - [MapMarkerResponseDto](doc//MapMarkerResponseDto.md)
+ - [MapStylesDto](doc//MapStylesDto.md)
  - [MemoryLaneResponseDto](doc//MemoryLaneResponseDto.md)
  - [MergePersonDto](doc//MergePersonDto.md)
  - [ModelType](doc//ModelType.md)

@@ -21,8 +21,8 @@ void main() {
       // TODO
     });
 
-    // String tileUrl
-    test('to test the property `tileUrl`', () async {
+    // List<MapStylesDto> styles (default value: const [])
+    test('to test the property `styles`', () async {
       // TODO
     });
 
