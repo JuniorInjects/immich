@@ -7,33 +7,28 @@
   import { AppRoute } from '$lib/constants';
   import { MapLibre, GeoJSON, MarkerLayer } from 'svelte-maplibre';
   import { assetViewingStore } from '$lib/stores/asset-viewing.store';
-  import { mapSettings } from '$lib/stores/preferences.store';
+  import { colorTheme, mapSettings } from '$lib/stores/preferences.store';
   import { featureFlags, serverConfig } from '$lib/stores/server-config.store';
   import { MapMarkerResponseDto, api } from '@api';
   import { isEqual, omit } from 'lodash-es';
   import { DateTime, Duration } from 'luxon';
   import { onDestroy, onMount } from 'svelte';
-  import Cog from 'svelte-material-icons/Cog.svelte';
   import type { PageData } from './$types';
-  import type { StyleSpecification } from 'maplibre-gl';
-  import _style from './style.json';
 
   export let data: PageData;
 
   let { isViewing: showAssetViewer, asset: viewingAsset } = assetViewingStore;
 
-  let leaflet: typeof import('$lib/components/shared-components/leaflet');
   let mapMarkers: MapMarkerResponseDto[] = [];
   let abortController: AbortController;
   let viewingAssets: string[] = [];
   let viewingAssetCursor = 0;
   let showSettingsModal = false;
-
-  const style = _style as StyleSpecification;
+  let styleUrl: string;
 
   onMount(() => {
     loadMapMarkers().then((data) => (mapMarkers = data));
-    import('$lib/components/shared-components/leaflet').then((data) => (leaflet = data));
+    colorTheme.subscribe(handleModeSwitch);
   });
 
   onDestroy(() => {
@@ -42,6 +37,27 @@
   });
 
   $: $featureFlags.map || goto(AppRoute.PHOTOS);
+
+  async function handleModeSwitch(mode: 'dark' | 'light') {
+    switch (mode) {
+      case 'dark':
+        styleUrl = getDarkStyle();
+        console.log(styleUrl);
+        break;
+      case 'light':
+        styleUrl = getLightStyle();
+        console.log(styleUrl);
+        break;
+    }
+  }
+
+  function getLightStyle() {
+    return $serverConfig.mapStyles.find((style) => style.theme === 'light')?.url || styleUrl;
+  }
+
+  function getDarkStyle() {
+    return $serverConfig.mapStyles.find((style) => style.theme === 'dark')?.url || styleUrl;
+  }
 
   async function loadMapMarkers() {
     if (abortController) {
@@ -88,11 +104,11 @@
     }
   }
 
-  function onViewAssets(assetIds: string[], activeAssetIndex: number) {
-    assetViewingStore.setAssetId(assetIds[activeAssetIndex]);
-    viewingAssets = assetIds;
-    viewingAssetCursor = activeAssetIndex;
-  }
+  // function onViewAssets(assetIds: string[], activeAssetIndex: number) {
+  //   assetViewingStore.setAssetId(assetIds[activeAssetIndex]);
+  //   viewingAssets = assetIds;
+  //   viewingAssetCursor = activeAssetIndex;
+  // }
 
   function navigateNext() {
     if (viewingAssetCursor < viewingAssets.length - 1) {
@@ -110,7 +126,7 @@
 {#if $featureFlags.loaded && $featureFlags.map}
   <UserPageLayout user={data.user} title={data.meta.title}>
     <div class="isolate h-full w-full">
-      <MapLibre {style} class="h-[500px]" standardControls>
+      <MapLibre style={styleUrl} class="h-[500px]" standardControls>
         <GeoJSON
           data={{
             type: 'FeatureCollection',
@@ -150,41 +166,6 @@
           </Marker>
         {/each} -->
       </MapLibre>
-      {#if leaflet}
-        {@const { Map, TileLayer, AssetMarkerCluster, Control } = leaflet}
-        <Map
-          center={[30, 0]}
-          zoom={3}
-          allowDarkMode={$mapSettings.allowDarkMode}
-          options={{
-            maxBounds: [
-              [-90, -180],
-              [90, 180],
-            ],
-            minZoom: 2,
-          }}
-        >
-          <TileLayer
-            urlTemplate={$serverConfig.mapTileUrl}
-            options={{
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            }}
-          />
-          <AssetMarkerCluster
-            markers={mapMarkers}
-            on:view={({ detail }) => onViewAssets(detail.assetIds, detail.activeAssetIndex)}
-          />
-          <Control>
-            <button
-              class="flex h-8 w-8 items-center justify-center rounded-sm border-2 border-black/20 bg-white font-bold text-black/70 hover:bg-gray-50 focus:bg-gray-50"
-              title="Open map settings"
-              on:click={() => (showSettingsModal = true)}
-            >
-              <Cog size="100%" class="p-1" />
-            </button>
-          </Control>
-        </Map>
-      {/if}
     </div>
   </UserPageLayout>
 

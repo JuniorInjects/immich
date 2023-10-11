@@ -24,7 +24,7 @@ export type ServerConfig = ServerConfigDto & { loaded: boolean };
 export const serverConfig = writable<ServerConfig>({
   loaded: false,
   oauthButtonText: '',
-  mapTileUrl: '',
+  mapStyles: [{ name: 'Immich light', theme: 'light', url: '/api/system-config/map-light' }],
   loginPageMessage: '',
   trashDays: 30,
   isInitialized: false,

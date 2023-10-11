@@ -4471,6 +4471,70 @@
         ]
       }
     },
+    "/system-config/map-dark": {
+      "get": {
+        "operationId": "getMapDark",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "tags": [
+          "System Config"
+        ]
+      }
+    },
+    "/system-config/map-light": {
+      "get": {
+        "operationId": "getMapLight",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "tags": [
+          "System Config"
+        ]
+      }
+    },
     "/system-config/storage-template-options": {
       "get": {
         "operationId": "getStorageTemplateOptions",
@@ -6926,6 +6990,29 @@
         ],
         "type": "object"
       },
+      "MapStylesDto": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "theme": {
+            "enum": [
+              "light",
+              "dark"
+            ],
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "theme",
+          "name",
+          "url"
+        ],
+        "type": "object"
+      },
       "MemoryLaneResponseDto": {
         "properties": {
           "assets": {
@@ -7357,8 +7444,11 @@
           "loginPageMessage": {
             "type": "string"
           },
-          "mapTileUrl": {
-            "type": "string"
+          "mapStyles": {
+            "items": {
+              "$ref": "#/components/schemas/MapStylesDto"
+            },
+            "type": "array"
           },
           "oauthButtonText": {
             "type": "string"
@@ -7371,7 +7461,7 @@
           "trashDays",
           "oauthButtonText",
           "loginPageMessage",
-          "mapTileUrl",
+          "mapStyles",
           "isInitialized"
         ],
         "type": "object"
@@ -7957,13 +8047,16 @@
           "enabled": {
             "type": "boolean"
           },
-          "tileUrl": {
-            "type": "string"
+          "styles": {
+            "items": {
+              "$ref": "#/components/schemas/MapStylesDto"
+            },
+            "type": "array"
           }
         },
         "required": [
           "enabled",
-          "tileUrl"
+          "styles"
         ],
         "type": "object"
       },

@@ -10,6 +10,7 @@ export * from './domain.module';
 export * from './domain.util';
 export * from './job';
 export * from './library';
+export * from './map';
 export * from './media';
 export * from './metadata';
 export * from './partner';

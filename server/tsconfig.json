@@ -25,7 +25,9 @@
       "@app/infra": ["src/infra"],
       "@app/infra/*": ["src/infra/*"],
       "@app/domain": ["src/domain"],
-      "@app/domain/*": ["src/domain/*"]
+      "@app/domain/*": ["src/domain/*"],
+      "@app/assets": ["assets"],
+      "@app/assets/*": ["assets/*"]
     }
   },
   "exclude": ["dist", "node_modules", "upload"]

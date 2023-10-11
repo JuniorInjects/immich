@@ -1,3 +1,5 @@
+import styleDark from '@app/assets/style-dark.json';
+import styleLight from '@app/assets/style-light.json';
 import { SystemConfigDto, SystemConfigService, SystemConfigTemplateStorageOptionDto } from '@app/domain';
 import { Body, Controller, Get, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -29,5 +31,15 @@ export class SystemConfigController {
   @Get('storage-template-options')
   getStorageTemplateOptions(): SystemConfigTemplateStorageOptionDto {
     return this.service.getStorageTemplateOptions();
+  }
+
+  @Get('map-light')
+  getMapLight(): object {
+    return styleLight;
+  }
+
+  @Get('map-dark')
+  getMapDark(): object {
+    return styleDark;
   }
 }

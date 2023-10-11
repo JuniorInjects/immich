@@ -1,4 +1,4 @@
-import { QueueName } from '@app/domain';
+import { MapStylesDto, QueueName } from '@app/domain';
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('system_config')
@@ -186,7 +186,7 @@ export interface SystemConfig {
   };
   map: {
     enabled: boolean;
-    tileUrl: string;
+    styles: MapStylesDto[];
   };
   reverseGeocoding: {
     enabled: boolean;

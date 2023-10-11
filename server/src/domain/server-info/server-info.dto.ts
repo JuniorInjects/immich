@@ -1,5 +1,6 @@
-import { FeatureFlags, IServerVersion } from '@app/domain';
+import { FeatureFlags, IServerVersion, MapStylesDto } from '@app/domain';
 import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class ServerPingResponse {
   @ApiResponseProperty({ type: String, example: 'pong' })
@@ -82,7 +83,8 @@ export class ServerMediaTypesResponseDto {
 export class ServerConfigDto {
   oauthButtonText!: string;
   loginPageMessage!: string;
-  mapTileUrl!: string;
+  @Type(() => MapStylesDto)
+  mapStyles!: MapStylesDto[];
   @ApiProperty({ type: 'integer' })
   trashDays!: number;
   isInitialized!: boolean;
