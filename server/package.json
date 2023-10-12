@@ -29,10 +29,10 @@
     "test:e2e": "NODE_OPTIONS='--experimental-vm-modules --max_old_space_size=4096' jest --config test/e2e/jest-e2e.json --runInBand --forceExit",
     "typeorm": "typeorm",
     "typeorm:migrations:create": "typeorm migration:create",
-    "typeorm:migrations:generate": "typeorm migration:generate -d ./dist/src/infra/database.config.js",
-    "typeorm:migrations:run": "typeorm migration:run -d ./dist/src/infra/database.config.js",
-    "typeorm:migrations:revert": "typeorm migration:revert -d ./dist/src/infra/database.config.js",
-    "typeorm:schema:drop": "typeorm schema:drop -d ./dist/src/infra/database.config.js",
+    "typeorm:migrations:generate": "typeorm migration:generate -d ./dist/infra/database.config.js",
+    "typeorm:migrations:run": "typeorm migration:run -d ./dist/infra/database.config.js",
+    "typeorm:migrations:revert": "typeorm migration:revert -d ./dist/infra/database.config.js",
+    "typeorm:schema:drop": "typeorm schema:drop -d ./dist/infra/database.config.js",
     "typeorm:schema:reset": "npm run typeorm:schema:drop && npm run typeorm:migrations:run",
     "api:typescript": "bash ./bin/generate-open-api.sh web",
     "api:dart": "bash ./bin/generate-open-api.sh mobile",
@@ -163,8 +163,7 @@
       "^@test(|/.*)$": "<rootDir>/test/$1",
       "^@app/immich(|/.*)$": "<rootDir>/src/immich/$1",
       "^@app/infra(|/.*)$": "<rootDir>/src/infra/$1",
-      "^@app/domain(|/.*)$": "<rootDir>/src/domain/$1",
-      "^@app/assets(|/.*)$": "<rootDir>/assets/$1"
+      "^@app/domain(|/.*)$": "<rootDir>/src/domain/$1"
     },
     "globalSetup": "<rootDir>/test/global-setup.js"
   }

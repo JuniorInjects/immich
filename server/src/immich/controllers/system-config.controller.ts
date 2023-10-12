@@ -1,8 +1,7 @@
-import styleDark from '@app/assets/style-dark.json';
-import styleLight from '@app/assets/style-light.json';
 import { SystemConfigDto, SystemConfigService, SystemConfigTemplateStorageOptionDto } from '@app/domain';
-import { Body, Controller, Get, Put } from '@nestjs/common';
+import { Body, Controller, Get, Put, Response } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Response as Res } from 'express';
 import { Authenticated } from '../app.guard';
 import { UseValidation } from '../app.utils';
 
@@ -34,12 +33,14 @@ export class SystemConfigController {
   }
 
   @Get('map-light')
-  getMapLight(): object {
-    return styleLight;
+  getMapLight(@Response() res: Res) {
+    res.header('Content-Type', 'application/json');
+    res.sendFile('./assets/style-light.json', { root: process.cwd() });
   }
 
   @Get('map-dark')
-  getMapDark(): object {
-    return styleDark;
+  getMapDark(@Response() res: Res) {
+    res.header('Content-Type', 'application/json');
+    res.sendFile('./assets/style-dark.json', { root: process.cwd() });
   }
 }
