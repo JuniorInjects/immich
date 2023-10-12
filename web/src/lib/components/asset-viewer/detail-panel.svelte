@@ -4,7 +4,6 @@
   import { featureFlags } from '$lib/stores/server-config.store';
   import { getAssetFilename } from '$lib/utils/asset-utils';
   import { AlbumResponseDto, AssetResponseDto, ThumbnailFormat, api } from '@api';
-  import type { LatLngTuple } from 'leaflet';
   import { DateTime } from 'luxon';
   import { createEventDispatcher } from 'svelte';
   import Calendar from 'svelte-material-icons/Calendar.svelte';
@@ -40,7 +39,7 @@
     const lng = asset.exifInfo?.longitude;
 
     if (lat && lng) {
-      return [Number(lat.toFixed(7)), Number(lng.toFixed(7))] as LatLngTuple;
+      return { lat: Number(lat.toFixed(7)), lng: Number(lng.toFixed(7)) };
     }
   })();
 
@@ -291,11 +290,7 @@
 
 {#if latlng && $featureFlags.loaded && $featureFlags.map}
   <div class="h-[360px]">
-    <Map
-      mapMarkers={[{ lat: latlng[0], lon: latlng[1], id: asset.id }]}
-      center={{ lat: latlng[0], lon: latlng[1] }}
-      zoom={14}
-    />
+    <Map mapMarkers={[{ lat: latlng.lat, lon: latlng.lng, id: asset.id }]} center={latlng} zoom={14} />
   </div>
 {/if}
 
