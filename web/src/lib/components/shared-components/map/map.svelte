@@ -11,7 +11,6 @@
   import { colorTheme } from '$lib/stores/preferences.store';
   import { serverConfig } from '$lib/stores/server-config.store';
   import { MapMarkerResponseDto, api } from '@api';
-  import { onMount } from 'svelte';
   import Cog from 'svelte-material-icons/Cog.svelte';
   import type { LngLatLike } from 'maplibre-gl';
 
@@ -20,30 +19,8 @@
   export let zoom: number | undefined = undefined;
   export let center: LngLatLike | undefined = undefined;
 
-  let styleUrl: string;
-
-  onMount(() => {
-    colorTheme.subscribe(handleModeSwitch);
-  });
-
-  async function handleModeSwitch(mode: 'dark' | 'light') {
-    switch (mode) {
-      case 'dark':
-        styleUrl = getDarkStyle();
-        break;
-      case 'light':
-        styleUrl = getLightStyle();
-        break;
-    }
-  }
-
-  function getLightStyle() {
-    return $serverConfig.mapStyles.find((style) => style.theme === 'light')?.url || styleUrl;
-  }
-
-  function getDarkStyle() {
-    return $serverConfig.mapStyles.find((style) => style.theme === 'dark')?.url || styleUrl;
-  }
+  $: defaultUrl = $serverConfig.mapStyles[0]?.url;
+  $: styleUrl = $serverConfig.mapStyles.find(({ theme }) => theme === $colorTheme)?.url || defaultUrl;
 </script>
 
 <MapLibre style={styleUrl} class="h-full" {center} {zoom} standardControls attributionControl={false}>
@@ -59,7 +36,6 @@
     data={{
       type: 'FeatureCollection',
       features: mapMarkers.map((marker) => {
-        // This should be done on the server
         return {
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [marker.lon, marker.lat] },
