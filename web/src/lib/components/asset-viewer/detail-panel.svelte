@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { locale } from '$lib/stores/preferences.store';
-  import { featureFlags, serverConfig } from '$lib/stores/server-config.store';
+  import { featureFlags } from '$lib/stores/server-config.store';
   import { getAssetFilename } from '$lib/utils/asset-utils';
   import { AlbumResponseDto, AssetResponseDto, ThumbnailFormat, api } from '@api';
   import type { LatLngTuple } from 'leaflet';
@@ -15,6 +15,7 @@
   import { asByteUnitString } from '../../utils/byte-units';
   import ImageThumbnail from '../assets/thumbnail/image-thumbnail.svelte';
   import UserAvatar from '../shared-components/user-avatar.svelte';
+  import Map from '../shared-components/map/map.svelte';
 
   export let asset: AssetResponseDto;
   export let albums: AlbumResponseDto[] = [];
@@ -42,9 +43,6 @@
       return [Number(lat.toFixed(7)), Number(lng.toFixed(7))] as LatLngTuple;
     }
   })();
-
-  $: lat = latlng ? latlng[0] : undefined;
-  $: lng = latlng ? latlng[1] : undefined;
 
   $: people = asset.people || [];
 
@@ -293,24 +291,11 @@
 
 {#if latlng && $featureFlags.loaded && $featureFlags.map}
   <div class="h-[360px]">
-    {#await import('../shared-components/leaflet') then { Map, TileLayer, Marker }}
-      <Map center={latlng} zoom={14}>
-        <TileLayer
-          urlTemplate={$serverConfig.mapTileUrl}
-          options={{
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-          }}
-        />
-        <Marker {latlng}>
-          <p>
-            {lat}, {lng}
-          </p>
-          <a href="https://www.openstreetmap.org/?mlat={lat}&mlon={lng}&zoom=15#map=15/{lat}/{lng}">
-            Open in OpenStreetMap
-          </a>
-        </Marker>
-      </Map>
-    {/await}
+    <Map
+      mapMarkers={[{ lat: latlng[0], lon: latlng[1], id: asset.id }]}
+      center={{ lat: latlng[0], lon: latlng[1] }}
+      zoom={14}
+    />
   </div>
 {/if}
 
