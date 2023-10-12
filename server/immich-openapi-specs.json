@@ -6993,7 +6993,6 @@
           }
         },
         "required": [
-          "theme",
           "name",
           "url"
         ],

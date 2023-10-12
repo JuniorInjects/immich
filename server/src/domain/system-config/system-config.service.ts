@@ -44,6 +44,7 @@ export class SystemConfigService {
     const config = await this.core.updateConfig(dto);
     await this.jobRepository.queue({ name: JobName.SYSTEM_CONFIG_CHANGE });
     this.communicationRepository.broadcast(CommunicationEvent.CONFIG_UPDATE, {});
+    console.log(mapConfig(config).map.styles);
     return mapConfig(config);
   }
 

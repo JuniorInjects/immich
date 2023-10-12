@@ -9,15 +9,18 @@
   import { fade } from 'svelte/transition';
   import SettingAccordion from '../setting-accordion.svelte';
   import SettingButtonsRow from '../setting-buttons-row.svelte';
-  import SettingInputField, { SettingInputFieldType } from '../setting-input-field.svelte';
   import SettingSwitch from '../setting-switch.svelte';
   import SettingSelect from '../setting-select.svelte';
+  import TrashCanOutline from 'svelte-material-icons/TrashCanOutline.svelte';
 
   export let config: SystemConfigDto; // this is the config that is being edited
   export let disabled = false;
 
   let savedConfig: SystemConfigDto;
   let defaultConfig: SystemConfigDto;
+
+  $: lightStyle = config.map.styles.find((style) => style.theme === 'light');
+  $: darkStyle = config.map.styles.find((style) => style.theme === 'dark');
 
   async function refreshConfig() {
     [savedConfig, defaultConfig] = await Promise.all([
@@ -34,7 +37,7 @@
           ...current,
           map: {
             enabled: config.map.enabled,
-            tileUrl: config.map.tileUrl,
+            styles: config.map.styles,
           },
           reverseGeocoding: {
             enabled: config.reverseGeocoding.enabled,
@@ -93,7 +96,74 @@
 
               <hr />
 
-              <SettingInputField
+              <table class="w-full text-left">
+                <thead
+                  class="mb-4 flex h-12 w-full rounded-md border bg-gray-50 text-immich-primary dark:border-immich-dark-gray dark:bg-immich-dark-gray dark:text-immich-dark-primary"
+                >
+                  <tr class="flex w-full place-items-center">
+                    <th class="w-1/5 text-center text-sm font-medium">Name</th>
+                    <th class="w-1/5 text-center text-sm font-medium">URL</th>
+                    <th class="w-1/5 text-center text-sm font-medium">Light Default</th>
+                    <th class="w-1/5 text-center text-sm font-medium">Dark Default</th>
+                    <th class="w-1/5 text-center text-sm font-medium">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="block w-full overflow-y-auto rounded-md border dark:border-immich-dark-gray">
+                  {#each config.map.styles as style, i}
+                    {#key style.url}
+                      <tr
+                        class={`flex h-[80px] w-full place-items-center text-center dark:text-immich-dark-fg ${
+                          i % 2 == 0
+                            ? 'bg-immich-gray dark:bg-immich-dark-gray/75'
+                            : 'bg-immich-bg dark:bg-immich-dark-gray/50'
+                        }`}
+                      >
+                        <td class="w-1/5 text-ellipsis px-4 text-sm">{style.name}</td>
+                        <td class="w-1/5 text-ellipsis px-4 text-sm">{style.url} </td>
+                        <td class="w-1/5 text-ellipsis px-4 text-sm">
+                          <SettingSwitch
+                            title=""
+                            checked={style === lightStyle}
+                            on:toggle={(state) => {
+                              if (state.detail) {
+                                style.theme = 'light';
+                              } else {
+                                style.theme = undefined;
+                              }
+                            }}
+                          />
+                        </td>
+                        <td class="w-1/5 text-ellipsis px-4 text-sm">
+                          <SettingSwitch
+                            title=""
+                            checked={style === darkStyle}
+                            on:toggle={(state) => {
+                              if (state.detail) {
+                                style.theme = 'dark';
+                              } else {
+                                style.theme = undefined;
+                              }
+                            }}
+                          />
+                        </td>
+                        <td class="w-1/5 text-ellipsis px-4 text-sm">
+                          <button
+                            on:click={() => {
+                              console.log(i);
+                              config.map.styles.splice(i);
+                            }}
+                            class="rounded-full bg-immich-primary p-3 text-gray-100 transition-all duration-150 hover:bg-immich-primary/75 dark:bg-immich-dark-primary dark:text-gray-700"
+                          >
+                            <TrashCanOutline size="16" />
+                          </button>
+                        </td>
+                      </tr>
+                    {/key}
+                  {/each}
+                </tbody>
+              </table>
+
+              <!-- <SettingInputField
                 inputType={SettingInputFieldType.TEXT}
                 label="Tile URL"
                 desc="URL to a leaflet compatible tile server"
@@ -101,7 +171,7 @@
                 required={true}
                 disabled={disabled || !config.map.enabled}
                 isEdited={config.map.tileUrl !== savedConfig.map.tileUrl}
-              />
+              /> -->
             </div></SettingAccordion
           >
 

@@ -1,12 +1,12 @@
 import { MapStylesDto } from '@app/domain';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsObject, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, ValidateNested } from 'class-validator';
 
 export class SystemConfigMapDto {
   @IsBoolean()
   enabled!: boolean;
 
-  @IsObject()
+  @IsArray()
   @Type(() => MapStylesDto)
   @ValidateNested()
   styles!: MapStylesDto[];

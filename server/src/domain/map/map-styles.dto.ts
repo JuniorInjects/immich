@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUrl } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class MapStylesDto {
   @IsString()
   name!: string;
 
-  @IsUrl()
+  @IsString()
   url!: string;
 
   @IsString()
-  @ApiProperty({ type: String, enum: ['light', 'dark'] })
+  @ApiProperty({ type: String, enum: ['light', 'dark'], required: false })
   theme!: 'light' | 'dark' | undefined;
 }
