@@ -6982,11 +6982,7 @@
             "type": "string"
           },
           "theme": {
-            "enum": [
-              "light",
-              "dark"
-            ],
-            "type": "string"
+            "$ref": "#/components/schemas/MapTheme"
           },
           "url": {
             "type": "string"
@@ -6997,6 +6993,13 @@
           "url"
         ],
         "type": "object"
+      },
+      "MapTheme": {
+        "enum": [
+          "light",
+          "dark"
+        ],
+        "type": "string"
       },
       "MemoryLaneResponseDto": {
         "properties": {
