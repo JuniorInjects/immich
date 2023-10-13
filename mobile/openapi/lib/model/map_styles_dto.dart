@@ -20,7 +20,13 @@ class MapStylesDto {
 
   String name;
 
-  MapStylesDtoThemeEnum? theme;
+  ///
+  /// Please note: This property should have been non-nullable! Since the specification file
+  /// does not include a default value (using the "default:" property), however, the generated
+  /// source code must fall back to having a nullable type.
+  /// Consider adding a "default:" property in the specification file to hide this note.
+  ///
+  MapTheme? theme;
 
   String url;
 
@@ -61,7 +67,7 @@ class MapStylesDto {
 
       return MapStylesDto(
         name: mapValueOfType<String>(json, r'name')!,
-        theme: MapStylesDtoThemeEnum.fromJson(json[r'theme']),
+        theme: MapTheme.fromJson(json[r'theme']),
         url: mapValueOfType<String>(json, r'url')!,
       );
     }
@@ -114,78 +120,4 @@ class MapStylesDto {
     'url',
   };
 }
-
-
-class MapStylesDtoThemeEnum {
-  /// Instantiate a new enum with the provided [value].
-  const MapStylesDtoThemeEnum._(this.value);
-
-  /// The underlying value of this enum member.
-  final String value;
-
-  @override
-  String toString() => value;
-
-  String toJson() => value;
-
-  static const light = MapStylesDtoThemeEnum._(r'light');
-  static const dark = MapStylesDtoThemeEnum._(r'dark');
-
-  /// List of all possible values in this [enum][MapStylesDtoThemeEnum].
-  static const values = <MapStylesDtoThemeEnum>[
-    light,
-    dark,
-  ];
-
-  static MapStylesDtoThemeEnum? fromJson(dynamic value) => MapStylesDtoThemeEnumTypeTransformer().decode(value);
-
-  static List<MapStylesDtoThemeEnum>? listFromJson(dynamic json, {bool growable = false,}) {
-    final result = <MapStylesDtoThemeEnum>[];
-    if (json is List && json.isNotEmpty) {
-      for (final row in json) {
-        final value = MapStylesDtoThemeEnum.fromJson(row);
-        if (value != null) {
-          result.add(value);
-        }
-      }
-    }
-    return result.toList(growable: growable);
-  }
-}
-
-/// Transformation class that can [encode] an instance of [MapStylesDtoThemeEnum] to String,
-/// and [decode] dynamic data back to [MapStylesDtoThemeEnum].
-class MapStylesDtoThemeEnumTypeTransformer {
-  factory MapStylesDtoThemeEnumTypeTransformer() => _instance ??= const MapStylesDtoThemeEnumTypeTransformer._();
-
-  const MapStylesDtoThemeEnumTypeTransformer._();
-
-  String encode(MapStylesDtoThemeEnum data) => data.value;
-
-  /// Decodes a [dynamic value][data] to a MapStylesDtoThemeEnum.
-  ///
-  /// If [allowNull] is true and the [dynamic value][data] cannot be decoded successfully,
-  /// then null is returned. However, if [allowNull] is false and the [dynamic value][data]
-  /// cannot be decoded successfully, then an [UnimplementedError] is thrown.
-  ///
-  /// The [allowNull] is very handy when an API changes and a new enum value is added or removed,
-  /// and users are still using an old app with the old code.
-  MapStylesDtoThemeEnum? decode(dynamic data, {bool allowNull = true}) {
-    if (data != null) {
-      switch (data) {
-        case r'light': return MapStylesDtoThemeEnum.light;
-        case r'dark': return MapStylesDtoThemeEnum.dark;
-        default:
-          if (!allowNull) {
-            throw ArgumentError('Unknown enum value to decode: $data');
-          }
-      }
-    }
-    return null;
-  }
-
-  /// Singleton [MapStylesDtoThemeEnumTypeTransformer] instance.
-  static MapStylesDtoThemeEnumTypeTransformer? _instance;
-}
-
 

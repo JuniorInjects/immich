@@ -313,6 +313,8 @@ class ApiClient {
           return MapMarkerResponseDto.fromJson(value);
         case 'MapStylesDto':
           return MapStylesDto.fromJson(value);
+        case 'MapTheme':
+          return MapThemeTypeTransformer().decode(value);
         case 'MemoryLaneResponseDto':
           return MemoryLaneResponseDto.fromJson(value);
         case 'MergePersonDto':

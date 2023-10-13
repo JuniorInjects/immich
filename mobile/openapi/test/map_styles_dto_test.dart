@@ -21,7 +21,7 @@ void main() {
       // TODO
     });
 
-    // String theme
+    // MapTheme theme
     test('to test the property `theme`', () async {
       // TODO
     });

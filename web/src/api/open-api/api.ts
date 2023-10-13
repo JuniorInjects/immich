@@ -2071,10 +2071,10 @@ export interface MapStylesDto {
     'name': string;
     /**
      * 
-     * @type {string}
+     * @type {MapTheme}
      * @memberof MapStylesDto
      */
-    'theme'?: MapStylesDtoThemeEnum;
+    'theme'?: MapTheme;
     /**
      * 
      * @type {string}
@@ -2083,12 +2083,20 @@ export interface MapStylesDto {
     'url': string;
 }
 
-export const MapStylesDtoThemeEnum = {
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const MapTheme = {
     Light: 'light',
     Dark: 'dark'
 } as const;
 
-export type MapStylesDtoThemeEnum = typeof MapStylesDtoThemeEnum[keyof typeof MapStylesDtoThemeEnum];
+export type MapTheme = typeof MapTheme[keyof typeof MapTheme];
+
 
 /**
  * 
