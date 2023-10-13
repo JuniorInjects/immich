@@ -8,7 +8,6 @@ export class MapStylesDto {
   @IsString()
   url!: string;
 
-  @IsString()
   @ApiProperty({ type: String, enum: ['light', 'dark'], required: false })
   theme!: 'light' | 'dark' | undefined;
 }

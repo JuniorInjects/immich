@@ -4,7 +4,7 @@
     NotificationType,
   } from '$lib/components/shared-components/notification/notification';
   import { handleError } from '$lib/utils/handle-error';
-  import { api, CitiesFile, SystemConfigDto } from '@api';
+  import { api, CitiesFile, MapStylesDto, SystemConfigDto } from '@api';
   import { cloneDeep, isEqual } from 'lodash-es';
   import { fade } from 'svelte/transition';
   import SettingAccordion from '../setting-accordion.svelte';
@@ -12,15 +12,19 @@
   import SettingSwitch from '../setting-switch.svelte';
   import SettingSelect from '../setting-select.svelte';
   import TrashCanOutline from 'svelte-material-icons/TrashCanOutline.svelte';
+  import Check from 'svelte-material-icons/Check.svelte';
+  import SettingInputField, { SettingInputFieldType } from '../setting-input-field.svelte';
 
   export let config: SystemConfigDto; // this is the config that is being edited
   export let disabled = false;
 
   let savedConfig: SystemConfigDto;
   let defaultConfig: SystemConfigDto;
+  let isEdit = false;
+  let newStyle: MapStylesDto = { name: '', url: '' };
 
-  $: lightStyle = config.map.styles.find((style) => style.theme === 'light');
-  $: darkStyle = config.map.styles.find((style) => style.theme === 'dark');
+  $: lightStyle = newStyle.theme === 'light' ? newStyle : config.map.styles.find((style) => style.theme === 'light');
+  $: darkStyle = newStyle.theme === 'dark' ? newStyle : config.map.styles.find((style) => style.theme === 'dark');
 
   async function refreshConfig() {
     [savedConfig, defaultConfig] = await Promise.all([
@@ -53,6 +57,23 @@
     } catch (error) {
       handleError(error, 'Unable to save settings');
     }
+  }
+
+  async function addStyle() {
+    if (!newStyle.name || !newStyle.url) {
+      notificationController.show({ message: 'Name and URL must both be set', type: NotificationType.Error });
+      return;
+    }
+
+    config.map.styles.push(newStyle);
+    await saveSetting();
+    isEdit = false;
+    newStyle = { name: '', url: '' };
+  }
+
+  async function deleteStyle(index: number) {
+    config.map.styles.splice(index);
+    await saveSetting();
   }
 
   async function reset() {
@@ -125,10 +146,14 @@
                             title=""
                             checked={style === lightStyle}
                             on:toggle={(state) => {
+                              style.theme = state.detail ? 'light' : undefined;
                               if (state.detail) {
-                                style.theme = 'light';
-                              } else {
-                                style.theme = undefined;
+                                config.map.styles.forEach((value) => {
+                                  if (value !== style && value.theme === style.theme) {
+                                    value.theme = undefined;
+                                  }
+                                });
+                                newStyle.theme = newStyle.theme === 'light' ? undefined : newStyle.theme;
                               }
                             }}
                           />
@@ -138,20 +163,21 @@
                             title=""
                             checked={style === darkStyle}
                             on:toggle={(state) => {
+                              style.theme = state.detail ? 'dark' : undefined;
                               if (state.detail) {
-                                style.theme = 'dark';
-                              } else {
-                                style.theme = undefined;
+                                config.map.styles.forEach((value) => {
+                                  if (value !== style && value.theme === style.theme) {
+                                    value.theme = undefined;
+                                  }
+                                });
+                                newStyle.theme = newStyle.theme === 'dark' ? undefined : newStyle.theme;
                               }
                             }}
                           />
                         </td>
                         <td class="w-1/5 text-ellipsis px-4 text-sm">
                           <button
-                            on:click={() => {
-                              console.log(i);
-                              config.map.styles.splice(i);
-                            }}
+                            on:click={() => deleteStyle(i)}
                             class="rounded-full bg-immich-primary p-3 text-gray-100 transition-all duration-150 hover:bg-immich-primary/75 dark:bg-immich-dark-primary dark:text-gray-700"
                           >
                             <TrashCanOutline size="16" />
@@ -160,8 +186,59 @@
                       </tr>
                     {/key}
                   {/each}
+                  {#if isEdit}
+                    <tr
+                      class={`flex h-[80px] w-full place-items-center text-center dark:text-immich-dark-fg ${
+                        config.map.styles.length % 2 == 0
+                          ? 'bg-immich-gray dark:bg-immich-dark-gray/75'
+                          : 'bg-immich-bg dark:bg-immich-dark-gray/50'
+                      }`}
+                    >
+                      <td class="w-1/5 text-ellipsis px-4 text-sm"
+                        ><SettingInputField
+                          inputType={SettingInputFieldType.TEXT}
+                          label=""
+                          bind:value={newStyle.name}
+                        /></td
+                      >
+                      <td class="w-1/5 text-ellipsis px-4 text-sm">
+                        <SettingInputField inputType={SettingInputFieldType.TEXT} label="" bind:value={newStyle.url} />
+                      </td>
+                      <td class="w-1/5 text-ellipsis px-4 text-sm"
+                        ><SettingSwitch
+                          title=""
+                          checked={newStyle.theme === 'light'}
+                          on:toggle={(state) => (newStyle.theme = state.detail ? 'light' : undefined)}
+                        /></td
+                      >
+                      <td class="w-1/5 text-ellipsis px-4 text-sm"
+                        ><SettingSwitch
+                          title=""
+                          checked={newStyle.theme === 'dark'}
+                          on:toggle={(state) => (newStyle.theme = state.detail ? 'dark' : undefined)}
+                        /></td
+                      >
+                      <td class="w-1/5 text-ellipsis px-4 text-sm">
+                        <button
+                          on:click={addStyle}
+                          class="rounded-full bg-immich-primary p-3 text-gray-100 transition-all duration-150 hover:bg-immich-primary/75 dark:bg-immich-dark-primary dark:text-gray-700"
+                          ><Check size="16" /></button
+                        >
+                      </td>
+                    </tr>
+                  {/if}
                 </tbody>
               </table>
+              <div class="flex justify-end">
+                <button
+                  on:click={() => {
+                    isEdit = !isEdit;
+                    newStyle = { name: '', url: '' };
+                  }}
+                  class="px-4 py-2 text-sm font-medium rounded-full bg-immich-primary p-3 text-gray-100 transition-all duration-150 hover:bg-immich-primary/75 dark:bg-immich-dark-primary dark:text-gray-700"
+                  >{isEdit ? 'Cancel' : 'Add'}</button
+                >
+              </div>
 
               <!-- <SettingInputField
                 inputType={SettingInputFieldType.TEXT}
